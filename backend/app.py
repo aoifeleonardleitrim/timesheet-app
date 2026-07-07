@@ -869,12 +869,14 @@ def frontend(path):
 # ============================================
 
 if __name__ == '__main__':
+    import os
+    port = int(os.environ.get('PORT', 8880))
     print("\n" + "="*60)
     print("TIMESHEET SYSTEM RUNNING")
     print("="*60)
-    print("\nAccess: http://localhost:5001")
+    print("\nAccess: http://localhost:" + str(port))
     print("\nLogin:")
     print("  Employer: employer@company.com / Admin123!")
     print("  Employee: employee@company.com / WelcomeEMP000002!")
     print("\n" + "="*60 + "\n")
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    app.run(debug=True, host='0.0.0.0', port=port)
