@@ -853,6 +853,22 @@ def export_excel():
     return send_file(output, as_attachment=True, download_name='timesheets.xlsx')
 
 # ============================================
+# HEALTH CHECK
+# ============================================
+
+@app.route('/ping')
+def ping():
+    return jsonify({'status': 'ok', 'message': 'Server is running'}), 200
+
+# ============================================
+# HEALTH CHECK
+# ============================================
+
+@app.route('/ping')
+def ping():
+    return jsonify({'status': 'ok', 'message': 'Server is running'}), 200
+
+# ============================================
 # SERVE FRONTEND
 # ============================================
 
