@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Timesheet</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #1a1a1a;
+            padding: 20px;
+        }
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header h1 { font-size: 22px; }
+        .header h1 span { color: #4a4a4a; font-weight: 300; }
+        .user-info { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        .user-info .name { font-weight: 500; }
+        .user-info .role-badge {
+            background: #1a1a1a;
+            color: white;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .logout-btn:hover { background: #c82333; }
+        
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        .card {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            font-weight: 500;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        .form-group label .required { color: #dc3545; }
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #1a1a1a;
+        }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        
+        .site-select-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .site-select-row select { flex: 1; }
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 12px;
+            white-space: nowrap;
+            background: #ffc107;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .btn-sm:hover { background: #e0a800; }
+        
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .day-card {
+            background: #f8f8f8;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #e8e8e8;
+        }
+        .day-card h4 {
+            text-align: center;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .day-card select, .day-card input {
+            width: 100%;
+            padding: 5px 6px;
+            margin-bottom: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .day-card select:focus, .day-card input:focus { outline: none; border-color: #1a1a1a; }
+        
+        .info-box {
+            background: #e8f0fe;
+            border: 1px solid #d0e0f0;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .info-box strong { display: block; margin-bottom: 4px; }
+        
+        .signature-section {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 2px solid #e8e8e8;
+            background: #fafafa;
+            border-radius: 6px;
+            padding: 20px;
+        }
+        .signature-section h3 { font-size: 17px; margin-bottom: 4px; }
+        .signature-section .subtitle { color: #666; font-size: 14px; margin-bottom: 16px; }
+        .signature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .signature-pad-container {
+            background: white;
+            border-radius: 6px;
+            padding: 15px;
+            border: 1px solid #e8e8e8;
+        }
+        #managerSignatureCanvas {
+            border: 1.5px dashed #ccc;
+            border-radius: 6px;
+            cursor: crosshair;
+            width: 100%;
+            height: 120px;
+            background: white;
+        }
+        .signature-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .signature-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e8e8e8;
+            font-size: 13px;
+        }
+        .signature-status .signed { color: #28a745; font-weight: 500; }
+        .signature-required { color: #dc3545; font-size: 14px; font-weight: 500; }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+        .btn-primary { background: #1a1a1a; color: white; }
+        .btn-primary:hover { background: #333; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-success:hover { background: #218838; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-secondary:hover { background: #5a6268; }
+        .btn-warning { background: #ffc107; color: #1a1a1a; }
+        .btn-warning:hover { background: #e0a800; }
+        
+        .actions { display: flex; gap: 16px; margin-top: 20px; flex-wrap: wrap; }
+        
+        .timesheet-list { margin-top: 16px; }
+        .timesheet-item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 16px;
+            padding: 15px;
+            background: #f8f8f8;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            align-items: center;
+            border: 1px solid #e8e8e8;
+        }
+        .timesheet-item .info { flex: 1; }
+        .timesheet-item .info .company-site { color: #666; font-size: 13px; }
+        .status-badge {
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        .status-draft { background: #e8e8e8; color: #4a4a4a; }
+        .status-submitted { background: #d0d0d0; color: #1a1a1a; }
+        .status-approved { background: #28a745; color: white; }
+        .status-rejected { background: #dc3545; color: white; }
+        
+        .signature-badge {
+            font-size: 12px;
+            padding: 2px 12px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+        .signature-badge.yes { background: #d4edda; color: #155724; }
+        .signature-badge.no { background: #f8d7da; color: #721c24; }
+        
+        .empty-state { text-align: center; padding: 40px; color: #999; }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal.show { display: flex; }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-header h2 { font-size: 20px; }
+        .modal-close {
+            font-size: 28px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #666;
+        }
+        .modal-close:hover { color: #1a1a1a; }
+        
+        .request-status {
+            font-size: 12px;
+            padding: 2px 12px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+        .request-status.pending { background: #fff3cd; color: #856404; }
+        .request-status.approved { background: #d4edda; color: #155724; }
+        .request-status.rejected { background: #f8d7da; color: #721c24; }
+        
+        .request-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 4px solid #ffc107;
+        }
+        .request-item.approved { border-left-color: #28a745; }
+        .request-item.rejected { border-left-color: #dc3545; }
+        
+        .password-message { margin-top: 10px; padding: 10px; border-radius: 6px; display: none; }
+        .password-message.success { display: block; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .password-message.error { display: block; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .days-grid { grid-template-columns: 1fr 1fr; }
+            .timesheet-item { grid-template-columns: 1fr; gap: 8px; }
+            .signature-grid { grid-template-columns: 1fr; }
+            .header { flex-direction: column; align-items: flex-start; }
+            .user-info { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Time<span>sheet</span></h1>
+    <div class="user-info">
+        <span class="name" id="userName">Loading...</span>
+        <span class="role-badge" id="userRole">Employee</span>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- Timesheet Entry -->
+    <div class="card">
+        <div class="card-title">New Timesheet Entry</div>
+
+        <div class="info-box">
+            <strong>How It Works:</strong>
+            1. Select your company and site from the dropdowns<br>
+            2. If your company or site isn't listed, click "Request Company" or "Request Site"<br>
+            3. Fill in your hours for each day<br>
+            4. Get your Site Manager to sign below<br>
+            5. Submit your timesheet for approval
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Company <span class="required">*</span></label>
+                <div class="site-select-row">
+                    <select id="companySelect" required>
+                        <option value="">Select a company</option>
+                    </select>
+                    <button class="btn-sm" onclick="openCompanyRequestModal()">Request Company</button>
+                </div>
+                <div id="companyLoading" style="text-align:center;padding:10px;color:#666;font-size:14px;">Loading companies...</div>
+            </div>
+            <div class="form-group">
+                <label>Site <span class="required">*</span></label>
+                <div class="site-select-row">
+                    <select id="siteSelect" required>
+                        <option value="">Select a site</option>
+                    </select>
+                    <button class="btn-sm" onclick="openSiteRequestModal()">Request Site</button>
+                </div>
+                <div id="siteLoading" style="text-align:center;padding:10px;color:#666;font-size:14px;display:none;">Loading sites...</div>
+            </div>
+            <div class="form-group">
+                <label>Week Start (Monday) <span class="required">*</span></label>
+                <input type="date" id="weekStart" required>
+            </div>
+            <div class="form-group">
+                <label>Week End (Sunday) <span class="required">*</span></label>
+                <input type="date" id="weekEnd" required>
+            </div>
+        </div>
+
+        <div class="days-grid" id="daysGrid"></div>
+
+        <div class="form-group" style="margin-top:16px;">
+            <label>Notes / Comments</label>
+            <textarea id="notes" rows="3" placeholder="Any additional notes for your manager..."></textarea>
+        </div>
+
+        <div class="signature-section">
+            <h3>Site Manager Signature <span class="signature-required">* Required</span></h3>
+            <p class="subtitle">The Site Manager must sign this timesheet before submission</p>
+            <div class="signature-grid">
+                <div class="form-group">
+                    <label>Site Manager Name (Bold Print) <span class="required">*</span></label>
+                    <input type="text" id="managerName" placeholder="Enter site manager's full name" required>
+                </div>
+                <div class="signature-pad-container">
+                    <label style="font-weight:500;font-size:14px;display:block;margin-bottom:8px;">Electronic Signature <span class="required">*</span></label>
+                    <canvas id="managerSignatureCanvas" width="440" height="120"></canvas>
+                    <div class="signature-actions">
+                        <button class="btn btn-secondary btn-sm" onclick="clearManagerSignature()">Clear</button>
+                        <span id="signatureStatus" class="signature-status" style="display:none;">
+                            <span class="signed">Signed</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-primary" onclick="saveTimesheet()">Save Draft</button>
+            <button class="btn btn-success" onclick="submitTimesheet()">Submit with Manager Signature</button>
+        </div>
+    </div>
+
+    <!-- My Timesheets -->
+    <div class="card">
+        <div class="card-title">My Timesheets</div>
+        <div id="timesheetList"></div>
+    </div>
+
+    <!-- My Requests -->
+    <div class="card">
+        <div class="card-title">My Requests</div>
+        <div id="requestList"></div>
+    </div>
+
+    <!-- Change Password -->
+    <div class="card">
+        <div class="card-title">Change Password</div>
+        <form id="changePasswordForm" onsubmit="changePassword(event)">
+            <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                <div class="form-group">
+                    <label>Current Password <span class="required">*</span></label>
+                    <input type="password" id="currentPassword" required>
+                </div>
+                <div class="form-group">
+                    <label>New Password <span class="required">*</span></label>
+                    <input type="password" id="newPassword" required minlength="8">
+                    <div style="font-size:12px;color:#666;margin-top:4px;">Minimum 8 characters</div>
+                </div>
+                <div class="form-group">
+                    <label>Confirm New Password <span class="required">*</span></label>
+                    <input type="password" id="confirmPassword" required>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Change Password</button>
+        </form>
+        <div id="passwordMessage" class="password-message"></div>
+    </div>
+</div>
+
+<!-- Company Request Modal -->
+<div class="modal" id="companyRequestModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Request New Company</h2>
+            <button class="modal-close" onclick="closeModal('companyRequestModal')">&times;</button>
+        </div>
+        <form onsubmit="submitCompanyRequest(event)">
+            <div class="info-box" style="margin-bottom:15px;">
+                <strong>Note:</strong> Your request will be sent to the employer for approval.
+                Once approved, the company will appear in your dropdown.
+            </div>
+            <div class="form-group"><label>Company Name *</label><input type="text" id="reqCompanyName" required></div>
+            <div class="form-group"><label>Address</label><input type="text" id="reqCompanyAddress"></div>
+            <div class="form-group"><label>Phone</label><input type="text" id="reqCompanyPhone"></div>
+            <div class="form-group"><label>Email</label><input type="email" id="reqCompanyEmail"></div>
+            <button type="submit" class="btn btn-warning" style="width:100%;padding:12px;">Submit Request</button>
+        </form>
+    </div>
+</div>
+
+<!-- Site Request Modal -->
+<div class="modal" id="siteRequestModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Request New Site</h2>
+            <button class="modal-close" onclick="closeModal('siteRequestModal')">&times;</button>
+        </div>
+        <form onsubmit="submitSiteRequest(event)">
+            <div class="info-box" style="margin-bottom:15px;">
+                <strong>Note:</strong> Your request will be sent to the employer for approval.
+                Once approved, the site will appear in your dropdown.
+            </div>
+            <div class="form-group"><label>Company *</label>
+                <select id="reqSiteCompany" required><option value="">Select a company</option></select>
+            </div>
+            <div class="form-group"><label>Site Name *</label><input type="text" id="reqSiteName" required></div>
+            <div class="form-group"><label>Address</label><input type="text" id="reqSiteAddress"></div>
+            <button type="submit" class="btn btn-warning" style="width:100%;padding:12px;">Submit Request</button>
+        </form>
+    </div>
+</div>
+
+<script>
+const API_URL = 'http://localhost:5001/api';
+const token = localStorage.getItem('token');
+
+if (!token) {
+    window.location.href = '/login.html';
+}
+
+let currentUser = null;
+let allCompanies = [];
+let allSites = [];
+let allTimesheets = [];
+let allRequests = [];
+let managerSignatureData = null;
+let canvas, ctx;
+let isDrawing = false;
+
+document.addEventListener('DOMContentLoaded', async function() {
+    await loadUser();
+    await loadData();
+    setupDaysGrid();
+    setupWeekDates();
+    setupSignatureCanvas();
+    renderTimesheets();
+    renderRequests();
+});
+
+async function callAPI(url, method = 'GET', data = null) {
+    const options = {
+        method: method,
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        }
+    };
+    if (data) options.body = JSON.stringify(data);
+    const response = await fetch(API_URL + url, options);
+    return response.json();
+}
+
+async function loadUser() {
+    try {
+        const user = await callAPI('/auth/me');
+        currentUser = user;
+        document.getElementById('userName').textContent = user.firstName + ' ' + user.lastName;
+        document.getElementById('userRole').textContent = user.role;
+    } catch (error) {
+        console.error('Error loading user:', error);
+    }
+}
+
+async function loadData() {
+    try {
+        allCompanies = await callAPI('/companies') || [];
+        allSites = await callAPI('/sites') || [];
+        allTimesheets = await callAPI('/timesheets') || [];
+        
+        const companyReqs = await callAPI('/company-requests') || [];
+        const siteReqs = await callAPI('/site-requests') || [];
+        allRequests = [...companyReqs, ...siteReqs];
+        
+        updateCompanyDropdown();
+        updateSiteDropdown();
+        updateRequestCompanyDropdown();
+    } catch (error) {
+        console.error('Error loading data:', error);
+    }
+}
+
+function updateCompanyDropdown() {
+    const select = document.getElementById('companySelect');
+    const loading = document.getElementById('companyLoading');
+    
+    loading.style.display = 'none';
+    select.innerHTML = '<option value="">Select a company</option>';
+    
+    const activeCompanies = allCompanies.filter(c => c.isActive !== false);
+    
+    if (activeCompanies.length === 0) {
+        select.innerHTML = '<option value="">No companies assigned</option>';
+        return;
+    }
+    
+    activeCompanies.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.name;
+        select.appendChild(opt);
+    });
+}
+
+function updateSiteDropdown() {
+    const select = document.getElementById('siteSelect');
+    const loading = document.getElementById('siteLoading');
+    const companyId = document.getElementById('companySelect').value;
+    
+    loading.style.display = 'block';
+    select.innerHTML = '<option value="">Select a site</option>';
+    
+    if (!companyId) {
+        loading.style.display = 'none';
+        select.innerHTML = '<option value="">Select a company first</option>';
+        return;
+    }
+    
+    const sites = allSites.filter(s => s.companyId == companyId && s.isActive !== false);
+    
+    loading.style.display = 'none';
+    
+    if (sites.length === 0) {
+        select.innerHTML = '<option value="">No sites for this company</option>';
+        return;
+    }
+    
+    sites.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.textContent = s.name + (s.address ? ' (' + s.address + ')' : '');
+        select.appendChild(opt);
+    });
+}
+
+function updateRequestCompanyDropdown() {
+    const select = document.getElementById('reqSiteCompany');
+    select.innerHTML = '<option value="">Select a company</option>';
+    allCompanies.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.name;
+        select.appendChild(opt);
+    });
+}
+
+function setupDaysGrid() {
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const grid = document.getElementById('daysGrid');
+    
+    grid.innerHTML = days.map((day, index) => `
+        <div class="day-card">
+            <h4>${dayNames[index]}</h4>
+            <select id="${day}_status">
+                <option value="present">Present</option>
+                <option value="absent">Absent</option>
+                <option value="sick">Sick Day</option>
+                <option value="annual_leave">Annual Leave</option>
+                <option value="public_holiday">Public Holiday</option>
+                <option value="training">Training</option>
+            </select>
+            <input type="time" id="${day}_start" placeholder="Start" value="09:00">
+            <input type="number" id="${day}_lunch" placeholder="Lunch (hrs)" step="0.5" min="0" max="2" value="0.5">
+            <input type="time" id="${day}_end" placeholder="End" value="17:00">
+        </div>
+    `).join('');
+}
+
+function setupWeekDates() {
+    const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay() + 1);
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    
+    document.getElementById('weekStart').value = startOfWeek.toISOString().split('T')[0];
+    document.getElementById('weekEnd').value = endOfWeek.toISOString().split('T')[0];
+}
+
+function getDaysData() {
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const data = {};
+    days.forEach(day => {
+        data[day] = {
+            status: document.getElementById(`${day}_status`).value,
+            startTime: document.getElementById(`${day}_start`).value,
+            lunchBreak: document.getElementById(`${day}_lunch`).value || '0.5',
+            endTime: document.getElementById(`${day}_end`).value
+        };
+    });
+    return data;
+}
+
+function setupSignatureCanvas() {
+    canvas = document.getElementById('managerSignatureCanvas');
+    if (!canvas) return;
+    ctx = canvas.getContext('2d');
+    
+    canvas.addEventListener('mousedown', (e) => {
+        isDrawing = true;
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        ctx.beginPath();
+        ctx.moveTo((e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY);
+    });
+    
+    canvas.addEventListener('mousemove', (e) => {
+        if (!isDrawing) return;
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#1a1a1a';
+        ctx.lineTo((e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY);
+        ctx.stroke();
+    });
+    
+    canvas.addEventListener('mouseup', () => {
+        isDrawing = false;
+        managerSignatureData = canvas.toDataURL();
+        updateSignatureStatus();
+    });
+    
+    canvas.addEventListener('mouseleave', () => {
+        isDrawing = false;
+    });
+    
+    canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        isDrawing = true;
+        ctx.beginPath();
+        ctx.moveTo((touch.clientX - rect.left) * scaleX, (touch.clientY - rect.top) * scaleY);
+    });
+    
+    canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        if (!isDrawing) return;
+        const touch = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#1a1a1a';
+        ctx.lineTo((touch.clientX - rect.left) * scaleX, (touch.clientY - rect.top) * scaleY);
+        ctx.stroke();
+    });
+    
+    canvas.addEventListener('touchend', () => {
+        isDrawing = false;
+        managerSignatureData = canvas.toDataURL();
+        updateSignatureStatus();
+    });
+}
+
+function updateSignatureStatus() {
+    const statusEl = document.getElementById('signatureStatus');
+    if (managerSignatureData && managerSignatureData.length > 100) {
+        statusEl.style.display = 'inline-flex';
+        statusEl.innerHTML = '<span class="signed">Signed</span>';
+    } else {
+        statusEl.style.display = 'none';
+    }
+}
+
+function clearManagerSignature() {
+    if (ctx && canvas) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        managerSignatureData = null;
+        const statusEl = document.getElementById('signatureStatus');
+        statusEl.style.display = 'none';
+    }
+}
+
+function getFormData() {
+    const companyId = document.getElementById('companySelect').value;
+    const siteId = document.getElementById('siteSelect').value;
+    const company = allCompanies.find(c => c.id == companyId);
+    const site = allSites.find(s => s.id == siteId);
+    
+    return {
+        companyId: companyId || null,
+        siteId: siteId || null,
+        companyName: company ? company.name : '',
+        siteName: site ? site.name : '',
+        weekStart: document.getElementById('weekStart').value,
+        weekEnd: document.getElementById('weekEnd').value,
+        days: getDaysData(),
+        notes: document.getElementById('notes').value,
+        managerName: document.getElementById('managerName').value,
+        managerSignature: managerSignatureData
+    };
+}
+
+async function saveTimesheet() {
+    try {
+        const data = getFormData();
+        if (!data.companyId) {
+            alert('Please select a company.');
+            document.getElementById('companySelect').focus();
+            return;
+        }
+        if (!data.siteId) {
+            alert('Please select a site.');
+            document.getElementById('siteSelect').focus();
+            return;
+        }
+        
+        const response = await callAPI('/timesheets', 'POST', data);
+        if (response.message) {
+            alert('Timesheet saved as draft.');
+            await loadData();
+            renderTimesheets();
+        } else {
+            alert('Error: ' + (response.error || 'Unknown error'));
+        }
+    } catch (error) {
+        alert('Error saving timesheet: ' + error.message);
+    }
+}
+
+async function submitTimesheet() {
+    try {
+        const companyId = document.getElementById('companySelect').value;
+        const siteId = document.getElementById('siteSelect').value;
+        const managerName = document.getElementById('managerName').value.trim();
+        
+        if (!companyId) {
+            alert('Please select a company.');
+            document.getElementById('companySelect').focus();
+            return;
+        }
+        if (!siteId) {
+            alert('Please select a site.');
+            document.getElementById('siteSelect').focus();
+            return;
+        }
+        if (!managerName) {
+            alert('Please enter the Site Manager\'s name (bold print).');
+            document.getElementById('managerName').focus();
+            return;
+        }
+        if (!managerSignatureData || managerSignatureData.length < 100) {
+            alert('Please get the Site Manager to sign this timesheet.');
+            return;
+        }
+        
+        const data = getFormData();
+        const createResponse = await callAPI('/timesheets', 'POST', data);
+        
+        if (!createResponse.message) {
+            alert('Error: ' + (createResponse.error || 'Unknown error'));
+            return;
+        }
+        
+        const submitResponse = await callAPI('/timesheets/' + createResponse.timesheet.id + '/submit', 'POST');
+        
+        if (submitResponse.message) {
+            const company = allCompanies.find(c => c.id == companyId);
+            const site = allSites.find(s => s.id == siteId);
+            alert(`Timesheet submitted successfully!\n\nCompany: ${company ? company.name : 'N/A'}\nSite: ${site ? site.name : 'N/A'}\nManager: ${managerName}\n\nThe employer will now review and approve your timesheet.`);
+            
+            await loadData();
+            renderTimesheets();
+            clearManagerSignature();
+            document.getElementById('managerName').value = '';
+        } else {
+            alert('Error submitting timesheet');
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+    }
+}
+
+function renderTimesheets() {
+    const container = document.getElementById('timesheetList');
+    
+    if (!allTimesheets || allTimesheets.length === 0) {
+        container.innerHTML = `<div class="empty-state">No timesheets submitted yet</div>`;
+        return;
+    }
+    
+    container.innerHTML = allTimesheets.map(t => {
+        const company = allCompanies.find(c => c.id == t.companyId);
+        const site = allSites.find(s => s.id == t.siteId);
+        const statusClass = `status-${t.status}`;
+        const hasSignature = t.hasSignature || false;
+        const signatureBadge = hasSignature ? 
+            '<span class="signature-badge yes">Signed by Manager</span>' : 
+            '<span class="signature-badge no">No Manager Signature</span>';
+        
+        return `
+            <div class="timesheet-item">
+                <div class="info">
+                    <strong>${company ? company.name : 'No company'}</strong>
+                    <div class="company-site">${site ? site.name : 'No site'}</div>
+                    <div style="margin-top:4px;">${signatureBadge}</div>
+                    ${t.managerName ? `<div style="font-size:13px;color:#666;">Manager: ${t.managerName}</div>` : ''}
+                </div>
+                <div style="font-size:14px;">${t.weekStart} → ${t.weekEnd}</div>
+                <div><strong>${t.totalHours || 0}h</strong></div>
+                <div><span class="status-badge ${statusClass}">${t.status}</span></div>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderRequests() {
+    const container = document.getElementById('requestList');
+    
+    const myRequests = allRequests.filter(r => r.employeeId == currentUser?.id);
+    
+    let html = `<div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:15px;">
+        <button class="btn btn-warning btn-sm" onclick="openCompanyRequestModal()">Request Company</button>
+        <button class="btn btn-warning btn-sm" onclick="openSiteRequestModal()">Request Site</button>
+    </div>`;
+    
+    if (!myRequests || myRequests.length === 0) {
+        html += `<div class="empty-state">No requests submitted. Click "Request Company" or "Request Site" to get started.</div>`;
+        container.innerHTML = html;
+        return;
+    }
+    
+    myRequests.forEach(r => {
+        const statusClass = r.status;
+        const isPending = r.status === 'pending';
+        const isApproved = r.status === 'approved';
+        const statusText = r.status.toUpperCase();
+        
+        if (r.companyName) {
+            html += `<div class="request-item ${isApproved ? 'approved' : ''} ${r.status === 'rejected' ? 'rejected' : ''}">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
+                    <div>
+                        <strong>New Company: ${r.companyName}</strong>
+                        <div style="color:#666;font-size:14px;">${r.address || 'No address'}</div>
+                        ${r.phone ? `<div style="color:#666;font-size:14px;">${r.phone}</div>` : ''}
+                        <div style="font-size:12px;color:#666;margin-top:4px;">Submitted: ${new Date(r.createdAt).toLocaleDateString()}</div>
+                    </div>
+                    <div>
+                        <span class="request-status ${statusClass}">${statusText}</span>
+                        ${isPending ? '<span style="font-size:12px;color:#856404;margin-left:8px;">Awaiting approval</span>' : ''}
+                        ${isApproved ? '<span style="font-size:12px;color:#155724;margin-left:8px;">Approved</span>' : ''}
+                    </div>
+                </div>
+            </div>`;
+        } else {
+            const company = allCompanies.find(c => c.id == r.companyId);
+            html += `<div class="request-item ${isApproved ? 'approved' : ''} ${r.status === 'rejected' ? 'rejected' : ''}">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
+                    <div>
+                        <strong>New Site: ${r.siteName}</strong>
+                        <div style="color:#666;font-size:14px;">Company: ${company ? company.name : 'Unknown'}</div>
+                        <div style="color:#666;font-size:14px;">${r.address || 'No address'}</div>
+                        <div style="font-size:12px;color:#666;margin-top:4px;">Submitted: ${new Date(r.createdAt).toLocaleDateString()}</div>
+                    </div>
+                    <div>
+                        <span class="request-status ${statusClass}">${statusText}</span>
+                        ${isPending ? '<span style="font-size:12px;color:#856404;margin-left:8px;">Awaiting approval</span>' : ''}
+                        ${isApproved ? '<span style="font-size:12px;color:#155724;margin-left:8px;">Approved</span>' : ''}
+                    </div>
+                </div>
+            </div>`;
+        }
+    });
+    
+    container.innerHTML = html;
+}
+
+function openCompanyRequestModal() {
+    document.getElementById('companyRequestModal').classList.add('show');
+    document.getElementById('reqCompanyName').value = '';
+    document.getElementById('reqCompanyAddress').value = '';
+    document.getElementById('reqCompanyPhone').value = '';
+    document.getElementById('reqCompanyEmail').value = '';
+}
+
+function openSiteRequestModal() {
+    document.getElementById('siteRequestModal').classList.add('show');
+    document.getElementById('reqSiteName').value = '';
+    document.getElementById('reqSiteAddress').value = '';
+    updateRequestCompanyDropdown();
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('show');
+}
+
+async function submitCompanyRequest(e) {
+    e.preventDefault();
+    const data = {
+        companyName: document.getElementById('reqCompanyName').value,
+        address: document.getElementById('reqCompanyAddress').value,
+        phone: document.getElementById('reqCompanyPhone').value,
+        email: document.getElementById('reqCompanyEmail').value
+    };
+    
+    const response = await callAPI('/company-requests', 'POST', data);
+    if (response.message) {
+        alert('Company request submitted! The employer will review it.');
+        closeModal('companyRequestModal');
+        await loadData();
+        renderRequests();
+    } else {
+        alert('Error: ' + (response.error || 'Unknown error'));
+    }
+}
+
+async function submitSiteRequest(e) {
+    e.preventDefault();
+    const data = {
+        companyId: document.getElementById('reqSiteCompany').value,
+        siteName: document.getElementById('reqSiteName').value,
+        address: document.getElementById('reqSiteAddress').value
+    };
+    
+    if (!data.companyId) {
+        alert('Please select a company.');
+        return;
+    }
+    
+    const response = await callAPI('/site-requests', 'POST', data);
+    if (response.message) {
+        alert('Site request submitted! The employer will review it.');
+        closeModal('siteRequestModal');
+        await loadData();
+        renderRequests();
+    } else {
+        alert('Error: ' + (response.error || 'Unknown error'));
+    }
+}
+
+async function changePassword(e) {
+    e.preventDefault();
+    
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const messageEl = document.getElementById('passwordMessage');
+    
+    messageEl.className = 'password-message';
+    messageEl.style.display = 'none';
+    
+    if (newPassword.length < 8) {
+        messageEl.textContent = 'Password must be at least 8 characters.';
+        messageEl.className = 'password-message error';
+        messageEl.style.display = 'block';
+        return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+        messageEl.textContent = 'Passwords do not match.';
+        messageEl.className = 'password-message error';
+        messageEl.style.display = 'block';
+        return;
+    }
+    
+    try {
+        const response = await fetch(API_URL + '/auth/change-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({
+                currentPassword: currentPassword,
+                newPassword: newPassword,
+                confirmPassword: confirmPassword
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            messageEl.textContent = 'Password changed successfully!';
+            messageEl.className = 'password-message success';
+            messageEl.style.display = 'block';
+            document.getElementById('changePasswordForm').reset();
+        } else {
+            messageEl.textContent = data.error || 'Error changing password';
+            messageEl.className = 'password-message error';
+            messageEl.style.display = 'block';
+        }
+    } catch (error) {
+        messageEl.textContent = 'Error: ' + error.message;
+        messageEl.className = 'password-message error';
+        messageEl.style.display = 'block';
+    }
+}
+
+document.getElementById('companySelect').addEventListener('change', function() {
+    updateSiteDropdown();
+});
+
+document.querySelectorAll('.modal').forEach(m => {
+    m.addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('show');
+    });
+});
+
+function logout() {
+    localStorage.removeItem('token');
+    window.location.href = '/login.html';
+}
+</script>
+</body>
+</html>

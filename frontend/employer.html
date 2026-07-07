@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #1a1a1a;
+            padding: 20px;
+        }
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header h1 { font-size: 22px; }
+        .header h1 span { color: #4a4a4a; font-weight: 300; }
+        .header-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btn-primary { background: #1a1a1a; color: white; }
+        .btn-primary:hover { background: #333; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-success:hover { background: #218838; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-danger:hover { background: #c82333; }
+        .btn-warning { background: #ffc107; color: #1a1a1a; }
+        .btn-warning:hover { background: #e0a800; }
+        .btn-info { background: #17a2b8; color: white; }
+        .btn-info:hover { background: #138496; }
+        .btn-sm { padding: 5px 12px; font-size: 12px; }
+        .btn-xs { padding: 3px 8px; font-size: 11px; }
+        .logout-btn { background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stat-box .number { font-size: 30px; font-weight: 700; }
+        .stat-box .label { color: #666; font-size: 14px; margin-top: 4px; }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .tab {
+            padding: 10px 20px;
+            background: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .tab:hover { background: #e8e8e8; }
+        .tab.active { background: #1a1a1a; color: white; }
+        .tab .badge {
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 8px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        .tab.active .badge { background: white; color: #1a1a1a; }
+        
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-height: 200px;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-title { font-size: 18px; font-weight: 600; }
+        
+        .item-card {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-left: 4px solid #1a1a1a;
+        }
+        .item-card .info { flex: 1; }
+        .item-card .info h4 { margin-bottom: 4px; }
+        .item-card .info p { color: #666; font-size: 14px; margin: 2px 0; }
+        .item-card .actions { display: flex; gap: 5px; flex-wrap: wrap; }
+        
+        .site-card {
+            background: #f8f8f8;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            border-left: 3px solid #17a2b8;
+            margin-left: 20px;
+        }
+        .site-card .info { flex: 1; }
+        .site-card .info h5 { font-size: 15px; }
+        .site-card .info p { color: #666; font-size: 13px; margin: 2px 0; }
+        .site-card .actions { display: flex; gap: 5px; flex-wrap: wrap; }
+        
+        .request-item {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        .request-item .info { flex: 1; }
+        .request-item .info h4 { margin-bottom: 4px; }
+        .request-item .info p { color: #666; font-size: 14px; margin: 2px 0; }
+        .request-item .actions { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 10px; }
+        
+        .empty { text-align: center; padding: 40px; color: #999; }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal.show { display: flex; }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-header h2 { font-size: 20px; }
+        .modal-close {
+            font-size: 28px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #666;
+        }
+        .modal-close:hover { color: #1a1a1a; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #1a1a1a; }
+        
+        @media (max-width: 768px) {
+            .stats { grid-template-columns: 1fr 1fr; }
+            .header { flex-direction: column; align-items: flex-start; }
+            .card-header { flex-direction: column; align-items: flex-start; }
+            .site-card { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Employer <span>Dashboard</span></h1>
+    <div class="header-right">
+        <span id="userName">Loading...</span>
+        <button class="btn btn-success" onclick="exportExcel()">Export Excel</button>
+        <button class="btn btn-danger logout-btn" onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="stats">
+        <div class="stat-box"><div class="number" id="totalCompanies">0</div><div class="label">Companies</div></div>
+        <div class="stat-box"><div class="number" id="totalSites">0</div><div class="label">Sites</div></div>
+        <div class="stat-box"><div class="number" id="totalEmployees">0</div><div class="label">Employees</div></div>
+        <div class="stat-box"><div class="number" id="pendingRequests">0</div><div class="label">Pending Requests</div></div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('companies', this)">Companies</button>
+        <button class="tab" onclick="switchTab('sites', this)">Sites</button>
+        <button class="tab" onclick="switchTab('employees', this)">Employees</button>
+        <button class="tab" onclick="switchTab('timesheets', this)">Timesheets</button>
+        <button class="tab" onclick="switchTab('requests', this)">Requests <span class="badge" id="requestBadge">0</span></button>
+    </div>
+
+    <div class="card" id="contentArea">
+        <div id="tabContent">Loading...</div>
+    </div>
+</div>
+
+<!-- Company Modal -->
+<div class="modal" id="companyModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="companyModalTitle">Add Company</h2>
+            <button class="modal-close" onclick="closeModal('companyModal')">&times;</button>
+        </div>
+        <form onsubmit="saveCompany(event)">
+            <input type="hidden" id="editCompanyId">
+            <div class="form-group"><label>Company Name *</label><input type="text" id="companyNameInput" required></div>
+            <div class="form-group"><label>Address</label><input type="text" id="companyAddress"></div>
+            <div class="form-group"><label>Phone</label><input type="text" id="companyPhone"></div>
+            <div class="form-group"><label>Email</label><input type="email" id="companyEmail"></div>
+            <button type="submit" class="btn btn-primary" style="width:100%;padding:12px;" id="companySubmitBtn">Create Company</button>
+        </form>
+    </div>
+</div>
+
+<!-- Site Modal -->
+<div class="modal" id="siteModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="siteModalTitle">Add Site</h2>
+            <button class="modal-close" onclick="closeModal('siteModal')">&times;</button>
+        </div>
+        <form onsubmit="saveSite(event)">
+            <input type="hidden" id="editSiteId">
+            <div class="form-group"><label>Site Name *</label><input type="text" id="siteNameInput" required></div>
+            <div class="form-group"><label>Address</label><input type="text" id="siteAddress"></div>
+            <div class="form-group"><label>Company *</label>
+                <select id="siteCompanySelect" required><option value="">Select a company</option></select>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;padding:12px;" id="siteSubmitBtn">Create Site</button>
+        </form>
+    </div>
+</div>
+
+<!-- Employee Modal -->
+<div class="modal" id="employeeModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Add Employee</h2>
+            <button class="modal-close" onclick="closeModal('employeeModal')">&times;</button>
+        </div>
+        <form onsubmit="saveEmployee(event)">
+            <div class="form-group"><label>First Name *</label><input type="text" id="empFirstName" required></div>
+            <div class="form-group"><label>Last Name *</label><input type="text" id="empLastName" required></div>
+            <div class="form-group"><label>Email *</label><input type="email" id="empEmail" required></div>
+            <div class="form-group"><label>Position</label><input type="text" id="empPosition"></div>
+            <div class="form-group"><label>Assign to Company</label>
+                <select id="empCompanySelect"><option value="">Select a company</option></select>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;padding:12px;">Create Employee</button>
+        </form>
+    </div>
+</div>
+
+<script>
+const API_URL = 'https://Dleonardeng.ie/api';
+const token = localStorage.getItem('token');
+
+if (!token) {
+    window.location.href = '/login.html';
+}
+
+let allCompanies = [];
+let allSites = [];
+let allEmployees = [];
+let allTimesheets = [];
+let allRequests = [];
+let currentUser = null;
+
+async function callAPI(url, method = 'GET', data = null) {
+    const options = {
+        method: method,
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        }
+    };
+    if (data) options.body = JSON.stringify(data);
+    const response = await fetch(API_URL + url, options);
+    return response.json();
+}
+
+async function loadUser() {
+    try {
+        const user = await callAPI('/auth/me');
+        currentUser = user;
+        document.getElementById('userName').textContent = user.firstName + ' ' + user.lastName;
+    } catch (error) {
+        console.error('Error loading user:', error);
+    }
+}
+
+async function loadData() {
+    try {
+        allCompanies = await callAPI('/companies') || [];
+        allSites = await callAPI('/sites') || [];
+        allEmployees = await callAPI('/employees') || [];
+        allTimesheets = await callAPI('/timesheets') || [];
+        
+        const companyReqs = await callAPI('/company-requests') || [];
+        const siteReqs = await callAPI('/site-requests') || [];
+        allRequests = [...companyReqs, ...siteReqs];
+        
+        document.getElementById('totalCompanies').textContent = allCompanies.length;
+        document.getElementById('totalSites').textContent = allSites.length;
+        document.getElementById('totalEmployees').textContent = allEmployees.length;
+        
+        const pendingRequests = allRequests.filter(r => r.status === 'pending').length;
+        document.getElementById('pendingRequests').textContent = pendingRequests;
+        document.getElementById('requestBadge').textContent = pendingRequests;
+        
+        updateDropdowns();
+    } catch (error) {
+        console.error('Error loading data:', error);
+    }
+}
+
+function updateDropdowns() {
+    const selects = ['siteCompanySelect', 'empCompanySelect'];
+    selects.forEach(id => {
+        const select = document.getElementById(id);
+        if (select) {
+            const currentValue = select.value;
+            select.innerHTML = '<option value="">Select a company</option>';
+            allCompanies.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.id;
+                opt.textContent = c.name;
+                select.appendChild(opt);
+            });
+            if (currentValue) select.value = currentValue;
+        }
+    });
+}
+
+function switchTab(tab, btn) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    
+    const content = document.getElementById('tabContent');
+    
+    if (tab === 'companies') renderCompanies(content);
+    else if (tab === 'sites') renderSites(content);
+    else if (tab === 'employees') renderEmployees(content);
+    else if (tab === 'timesheets') renderTimesheets(content);
+    else if (tab === 'requests') renderRequests(content);
+}
+
+function renderCompanies(content) {
+    let html = `<div class="card-header">
+        <div class="card-title">Companies (${allCompanies.length})</div>
+        <button class="btn btn-primary" onclick="openCompanyModal()">+ Add Company</button>
+    </div>`;
+    
+    if (allCompanies.length === 0) {
+        html += '<div class="empty">No companies. Click "Add Company" to create one.</div>';
+    } else {
+        allCompanies.forEach(c => {
+            const companySites = allSites.filter(s => s.companyId === c.id);
+            html += `<div class="item-card">
+                <div class="info">
+                    <h4>${c.name}</h4>
+                    <p>${c.address || 'No address'} ${c.phone ? '| ' + c.phone : ''}</p>
+                    <p style="font-size:13px;color:#17a2b8;">${companySites.length} sites</p>
+                    <div style="margin-top:8px;">
+                        ${companySites.map(s => `
+                            <div class="site-card">
+                                <div class="info">
+                                    <h5>${s.name}</h5>
+                                    <p>${s.address || 'No address'}</p>
+                                </div>
+                                <div class="actions">
+                                    <button class="btn btn-danger btn-xs" onclick="deleteSite(${s.id})">Delete</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                        ${companySites.length === 0 ? '<p style="color:#999;font-size:13px;padding:5px 0;">No sites for this company</p>' : ''}
+                    </div>
+                </div>
+                <div class="actions">
+                    <button class="btn btn-warning btn-sm" onclick="editCompany(${c.id})">Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteCompany(${c.id})">Delete</button>
+                </div>
+            </div>`;
+        });
+    }
+    content.innerHTML = html;
+}
+
+function renderSites(content) {
+    let html = `<div class="card-header">
+        <div class="card-title">Sites (${allSites.length})</div>
+        <button class="btn btn-primary" onclick="openSiteModal()">+ Add Site</button>
+    </div>`;
+    
+    if (allSites.length === 0) {
+        html += '<div class="empty">No sites. Click "Add Site" to create one.</div>';
+    } else {
+        allSites.forEach(s => {
+            const company = allCompanies.find(c => c.id === s.companyId);
+            html += `<div class="item-card">
+                <div class="info">
+                    <h4>${s.name}</h4>
+                    <p>${s.address || 'No address'}</p>
+                    <p style="font-size:13px;color:#17a2b8;">${company ? 'Company: ' + company.name : 'No company assigned'}</p>
+                </div>
+                <div class="actions">
+                    <button class="btn btn-warning btn-sm" onclick="editSite(${s.id})">Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteSite(${s.id})">Delete</button>
+                </div>
+            </div>`;
+        });
+    }
+    content.innerHTML = html;
+}
+
+function renderEmployees(content) {
+    let html = `<div class="card-header">
+        <div class="card-title">Employees (${allEmployees.length})</div>
+        <button class="btn btn-primary" onclick="openEmployeeModal()">+ Add Employee</button>
+    </div>`;
+    
+    if (allEmployees.length === 0) {
+        html += '<div class="empty">No employees. Click "Add Employee" to create one.</div>';
+    } else {
+        allEmployees.forEach(e => {
+            const company = allCompanies.find(c => c.id === e.companyId);
+            html += `<div class="item-card">
+                <div class="info">
+                    <h4>${e.firstName} ${e.lastName}</h4>
+                    <p>${e.email} | ${e.position || 'No position'}</p>
+                    <p style="font-size:13px;color:#17a2b8;">${company ? 'Company: ' + company.name : 'No company assigned'}</p>
+                </div>
+                <div class="actions">
+                    <button class="btn btn-danger btn-sm" onclick="deleteEmployee(${e.id})">Delete</button>
+                </div>
+            </div>`;
+        });
+    }
+    content.innerHTML = html;
+}
+
+function renderTimesheets(content) {
+    let html = `<div class="card-header">
+        <div class="card-title">Timesheets (${allTimesheets.length})</div>
+    </div>`;
+    
+    if (allTimesheets.length === 0) {
+        html += '<div class="empty">No timesheets submitted yet.</div>';
+    } else {
+        allTimesheets.forEach(t => {
+            const employee = allEmployees.find(e => e.id === t.employeeId);
+            const company = allCompanies.find(c => c.id === t.companyId);
+            const site = allSites.find(s => s.id === t.siteId);
+            const statusColor = t.status === 'approved' ? '#28a745' : t.status === 'rejected' ? '#dc3545' : '#ffc107';
+            
+            html += `<div class="item-card" style="border-left-color: ${statusColor};">
+                <div class="info">
+                    <h4>${employee ? employee.firstName + ' ' + employee.lastName : 'Unknown'}</h4>
+                    <p>${company ? company.name : 'No company'} | ${site ? site.name : 'No site'}</p>
+                    <p>${t.weekStart} to ${t.weekEnd} | ${t.totalHours || 0}h</p>
+                    ${t.managerName ? `<p style="font-size:13px;color:#28a745;">Signed by: ${t.managerName}</p>` : '<p style="font-size:13px;color:#dc3545;">No signature</p>'}
+                </div>
+                <div class="actions">
+                    ${t.status === 'submitted' ? `
+                        <button class="btn btn-success btn-sm" onclick="approveTimesheet(${t.id})">Approve</button>
+                        <button class="btn btn-danger btn-sm" onclick="rejectTimesheet(${t.id})">Reject</button>
+                    ` : `
+                        <span style="padding:5px 12px; border-radius:4px; background:${statusColor}; color:white; font-size:12px; font-weight:500;">${t.status.toUpperCase()}</span>
+                    `}
+                </div>
+            </div>`;
+        });
+    }
+    content.innerHTML = html;
+}
+
+function renderRequests(content) {
+    const pending = allRequests.filter(r => r.status === 'pending');
+    
+    let html = `<div class="card-header">
+        <div class="card-title">Pending Requests (${pending.length})</div>
+    </div>`;
+    
+    if (pending.length === 0) {
+        html += '<div class="empty">No pending requests.</div>';
+    } else {
+        pending.forEach(r => {
+            if (r.companyName) {
+                html += `<div class="request-item">
+                    <div class="info">
+                        <h4>New Company: ${r.companyName}</h4>
+                        <p>Requested by: ${r.employeeName || 'Unknown'}</p>
+                        <p>${r.address || 'No address'} ${r.phone ? '| ' + r.phone : ''}</p>
+                        <p style="font-size:12px;color:#666;">Submitted: ${new Date(r.createdAt).toLocaleDateString()}</p>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-success btn-sm" onclick="approveCompanyRequest(${r.id})">Approve</button>
+                        <button class="btn btn-danger btn-sm" onclick="rejectCompanyRequest(${r.id})">Reject</button>
+                    </div>
+                </div>`;
+            } else {
+                const company = allCompanies.find(c => c.id === r.companyId);
+                html += `<div class="request-item">
+                    <div class="info">
+                        <h4>New Site: ${r.siteName}</h4>
+                        <p>Requested by: ${r.employeeName || 'Unknown'}</p>
+                        <p>Company: ${company ? company.name : 'Unknown'}</p>
+                        <p>${r.address || 'No address'}</p>
+                        <p style="font-size:12px;color:#666;">Submitted: ${new Date(r.createdAt).toLocaleDateString()}</p>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-success btn-sm" onclick="approveSiteRequest(${r.id})">Approve</button>
+                        <button class="btn btn-danger btn-sm" onclick="rejectSiteRequest(${r.id})">Reject</button>
+                    </div>
+                </div>`;
+            }
+        });
+    }
+    content.innerHTML = html;
+}
+
+function openCompanyModal(data) {
+    const modal = document.getElementById('companyModal');
+    document.getElementById('companyModalTitle').textContent = data ? 'Edit Company' : 'Add Company';
+    document.getElementById('editCompanyId').value = data ? data.id : '';
+    document.getElementById('companyNameInput').value = data ? data.name : '';
+    document.getElementById('companyAddress').value = data ? data.address : '';
+    document.getElementById('companyPhone').value = data ? data.phone : '';
+    document.getElementById('companyEmail').value = data ? data.email : '';
+    document.getElementById('companySubmitBtn').textContent = data ? 'Update Company' : 'Create Company';
+    modal.classList.add('show');
+}
+
+function editCompany(id) {
+    const company = allCompanies.find(c => c.id === id);
+    if (company) openCompanyModal(company);
+}
+
+async function saveCompany(e) {
+    e.preventDefault();
+    const id = document.getElementById('editCompanyId').value;
+    const data = {
+        name: document.getElementById('companyNameInput').value,
+        address: document.getElementById('companyAddress').value,
+        phone: document.getElementById('companyPhone').value,
+        email: document.getElementById('companyEmail').value
+    };
+    
+    const url = id ? '/companies/' + id : '/companies';
+    const method = id ? 'PUT' : 'POST';
+    const response = await callAPI(url, method, data);
+    
+    if (response.message) {
+        alert(id ? 'Company updated!' : 'Company created!');
+        closeModal('companyModal');
+        await loadData();
+        switchTab('companies', document.querySelector('.tab'));
+    } else {
+        alert('Error: ' + (response.error || 'Unknown error'));
+    }
+}
+
+async function deleteCompany(id) {
+    if (!confirm('Delete this company?')) return;
+    const response = await callAPI('/companies/' + id, 'DELETE');
+    if (response.message) {
+        await loadData();
+        switchTab('companies', document.querySelector('.tab'));
+    }
+}
+
+function openSiteModal(data) {
+    const modal = document.getElementById('siteModal');
+    document.getElementById('siteModalTitle').textContent = data ? 'Edit Site' : 'Add Site';
+    document.getElementById('editSiteId').value = data ? data.id : '';
+    document.getElementById('siteNameInput').value = data ? data.name : '';
+    document.getElementById('siteAddress').value = data ? data.address : '';
+    document.getElementById('siteCompanySelect').value = data ? data.companyId : '';
+    document.getElementById('siteSubmitBtn').textContent = data ? 'Update Site' : 'Create Site';
+    updateDropdowns();
+    modal.classList.add('show');
+}
+
+function editSite(id) {
+    const site = allSites.find(s => s.id === id);
+    if (site) openSiteModal(site);
+}
+
+async function saveSite(e) {
+    e.preventDefault();
+    const id = document.getElementById('editSiteId').value;
+    const data = {
+        name: document.getElementById('siteNameInput').value,
+        address: document.getElementById('siteAddress').value,
+        companyId: document.getElementById('siteCompanySelect').value || null
+    };
+    
+    if (!data.companyId) {
+        alert('Please select a company.');
+        return;
+    }
+    
+    const url = id ? '/sites/' + id : '/sites';
+    const method = id ? 'PUT' : 'POST';
+    const response = await callAPI(url, method, data);
+    
+    if (response.message) {
+        alert(id ? 'Site updated!' : 'Site created!');
+        closeModal('siteModal');
+        await loadData();
+        switchTab('sites', document.querySelector('.tab:nth-child(2)'));
+    } else {
+        alert('Error: ' + (response.error || 'Unknown error'));
+    }
+}
+
+async function deleteSite(id) {
+    if (!confirm('Delete this site?')) return;
+    const response = await callAPI('/sites/' + id, 'DELETE');
+    if (response.message) {
+        await loadData();
+        switchTab('sites', document.querySelector('.tab:nth-child(2)'));
+    }
+}
+
+function openEmployeeModal() {
+    document.getElementById('employeeModal').classList.add('show');
+    document.getElementById('empFirstName').value = '';
+    document.getElementById('empLastName').value = '';
+    document.getElementById('empEmail').value = '';
+    document.getElementById('empPosition').value = '';
+    updateDropdowns();
+}
+
+async function saveEmployee(e) {
+    e.preventDefault();
+    const data = {
+        firstName: document.getElementById('empFirstName').value,
+        lastName: document.getElementById('empLastName').value,
+        email: document.getElementById('empEmail').value,
+        position: document.getElementById('empPosition').value,
+        companyId: document.getElementById('empCompanySelect').value || null
+    };
+    
+    const response = await callAPI('/employees', 'POST', data);
+    if (response.message) {
+        alert(`Employee created!\nPassword: ${response.defaultPassword}`);
+        closeModal('employeeModal');
+        await loadData();
+        switchTab('employees', document.querySelector('.tab:nth-child(3)'));
+    } else {
+        alert('Error: ' + (response.error || 'Unknown error'));
+    }
+}
+
+async function deleteEmployee(id) {
+    if (!confirm('Delete this employee?')) return;
+    const response = await callAPI('/employees/' + id, 'DELETE');
+    if (response.message) {
+        await loadData();
+        switchTab('employees', document.querySelector('.tab:nth-child(3)'));
+    }
+}
+
+async function approveTimesheet(id) {
+    if (!confirm('Approve this timesheet?')) return;
+    const response = await callAPI('/timesheets/' + id + '/approve', 'POST');
+    if (response.message) {
+        alert('Timesheet approved!');
+        await loadData();
+        switchTab('timesheets', document.querySelector('.tab:nth-child(4)'));
+    }
+}
+
+async function rejectTimesheet(id) {
+    if (!confirm('Reject this timesheet?')) return;
+    const response = await callAPI('/timesheets/' + id + '/reject', 'POST');
+    if (response.message) {
+        alert('Timesheet rejected');
+        await loadData();
+        switchTab('timesheets', document.querySelector('.tab:nth-child(4)'));
+    }
+}
+
+async function approveCompanyRequest(id) {
+    if (!confirm('Approve this company request?')) return;
+    const response = await callAPI('/company-requests/' + id + '/approve', 'POST');
+    if (response.message) {
+        alert('Company approved and created!');
+        await loadData();
+        switchTab('requests', document.querySelector('.tab:nth-child(5)'));
+    } else {
+        alert('Error: ' + (response.error || 'Unknown error'));
+    }
+}
+
+async function rejectCompanyRequest(id) {
+    if (!confirm('Reject this company request?')) return;
+    const response = await callAPI('/company-requests/' + id + '/reject', 'POST');
+    if (response.message) {
+        alert('Company request rejected');
+        await loadData();
+        switchTab('requests', document.querySelector('.tab:nth-child(5)'));
+    }
+}
+
+async function approveSiteRequest(id) {
+    if (!confirm('Approve this site request?')) return;
+    const response = await callAPI('/site-requests/' + id + '/approve', 'POST');
+    if (response.message) {
+        alert('Site approved and created!');
+        await loadData();
+        switchTab('requests', document.querySelector('.tab:nth-child(5)'));
+    } else {
+        alert('Error: ' + (response.error || 'Unknown error'));
+    }
+}
+
+async function rejectSiteRequest(id) {
+    if (!confirm('Reject this site request?')) return;
+    const response = await callAPI('/site-requests/' + id + '/reject', 'POST');
+    if (response.message) {
+        alert('Site request rejected');
+        await loadData();
+        switchTab('requests', document.querySelector('.tab:nth-child(5)'));
+    }
+}
+
+async function exportExcel() {
+    try {
+        const response = await fetch(API_URL + '/export/excel', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'timesheets.xlsx';
+        a.click();
+        window.URL.revokeObjectURL(url);
+    } catch (error) {
+        alert('Error exporting: ' + error.message);
+    }
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('show');
+}
+
+document.querySelectorAll('.modal').forEach(m => {
+    m.addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('show');
+    });
+});
+
+function logout() {
+    localStorage.removeItem('token');
+    window.location.href = '/login.html';
+}
+
+(async function() {
+    await loadUser();
+    await loadData();
+    switchTab('companies', document.querySelector('.tab'));
+})();
+</script>
+</body>
+</html>
